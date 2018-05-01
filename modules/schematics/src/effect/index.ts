@@ -15,16 +15,8 @@ import {
   url,
 } from '@angular-devkit/schematics';
 import * as ts from 'typescript';
-import * as stringUtils from '@ngrx/store/schematics/strings';
-import { addImportToModule } from '@ngrx/store/schematics/utility/ast-utils';
-import { InsertChange } from '@ngrx/store/schematics/utility/change';
-import {
-  buildRelativePath,
-  findModuleFromOptions,
-} from '@ngrx/store/schematics/utility/find-module';
+import * as schematicUtils from '@ngrx/store/schematics';
 import { Schema as EffectOptions } from './schema';
-import { insertImport } from '@ngrx/store/schematics/utility/route-utils';
-import { getProjectPath } from '@ngrx/store/schematics/utility/project';
 
 function addImportToNgModule(options: EffectOptions): Rule {
   return (host: Tree) => {
@@ -51,9 +43,9 @@ function addImportToNgModule(options: EffectOptions): Rule {
       true
     );
 
-    const effectsName = `${stringUtils.classify(`${options.name}Effects`)}`;
+    const effectsName = `${schematicUtils.classify(`${options.name}Effects`)}`;
 
-    const effectsModuleImport = insertImport(
+    const effectsModuleImport = schematicUtils.insertImport(
       source,
       modulePath,
       'EffectsModule',
@@ -62,18 +54,21 @@ function addImportToNgModule(options: EffectOptions): Rule {
 
     const effectsPath =
       `/${options.path}/` +
-      (options.flat ? '' : stringUtils.dasherize(options.name) + '/') +
+      (options.flat ? '' : schematicUtils.dasherize(options.name) + '/') +
       (options.group ? 'effects/' : '') +
-      stringUtils.dasherize(options.name) +
+      schematicUtils.dasherize(options.name) +
       '.effects';
-    const relativePath = buildRelativePath(modulePath, effectsPath);
-    const effectsImport = insertImport(
+    const relativePath = schematicUtils.buildRelativePath(
+      modulePath,
+      effectsPath
+    );
+    const effectsImport = schematicUtils.insertImport(
       source,
       modulePath,
       effectsName,
       relativePath
     );
-    const [effectsNgModuleImport] = addImportToModule(
+    const [effectsNgModuleImport] = schematicUtils.addImportToModule(
       source,
       modulePath,
       `EffectsModule.for${options.root ? 'Root' : 'Feature'}([${effectsName}])`,
@@ -82,7 +77,7 @@ function addImportToNgModule(options: EffectOptions): Rule {
     const changes = [effectsModuleImport, effectsImport, effectsNgModuleImport];
     const recorder = host.beginUpdate(modulePath);
     for (const change of changes) {
-      if (change instanceof InsertChange) {
+      if (change instanceof schematicUtils.InsertChange) {
         recorder.insertLeft(change.pos, change.toAdd);
       }
     }
@@ -94,18 +89,18 @@ function addImportToNgModule(options: EffectOptions): Rule {
 
 export default function(options: EffectOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
-    options.path = getProjectPath(host, options);
+    options.path = schematicUtils.getProjectPath(host, options);
 
     if (options.module) {
-      options.module = findModuleFromOptions(host, options);
+      options.module = schematicUtils.findModuleFromOptions(host, options);
     }
 
     const templateSource = apply(url('./files'), [
       options.spec ? noop() : filter(path => !path.endsWith('__spec.ts')),
       template({
-        ...stringUtils,
+        ...schematicUtils,
         'if-flat': (s: string) =>
-          stringUtils.group(
+          schematicUtils.group(
             options.flat ? '' : s,
             options.group ? 'effects' : ''
           ),

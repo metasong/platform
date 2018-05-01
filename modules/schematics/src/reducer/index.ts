@@ -15,31 +15,23 @@ import {
   url,
 } from '@angular-devkit/schematics';
 import * as ts from 'typescript';
-import * as stringUtils from '@ngrx/store/schematics/strings';
-import { findModuleFromOptions } from '@ngrx/store/schematics/utility/find-module';
+import * as schematicUtils from '@ngrx/store/schematics';
 import { Schema as ReducerOptions } from './schema';
-import {
-  addReducerToStateInferface,
-  addReducerToActionReducerMap,
-  addReducerToState,
-  addReducerImportToNgModule,
-} from '@ngrx/store/schematics/utility/ngrx-utils';
-import { getProjectPath } from '@ngrx/store/schematics/utility/project';
 
 export default function(options: ReducerOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
-    options.path = getProjectPath(host, options);
+    options.path = schematicUtils.getProjectPath(host, options);
 
     if (options.module) {
-      options.module = findModuleFromOptions(host, options);
+      options.module = schematicUtils.findModuleFromOptions(host, options);
     }
 
     const templateSource = apply(url('./files'), [
       options.spec ? noop() : filter(path => !path.endsWith('__spec.ts')),
       template({
-        ...stringUtils,
+        ...schematicUtils,
         'if-flat': (s: string) =>
-          stringUtils.group(
+          schematicUtils.group(
             options.flat ? '' : s,
             options.group ? 'reducers' : ''
           ),
@@ -52,7 +44,7 @@ export default function(options: ReducerOptions): Rule {
       branchAndMerge(
         chain([
           filter(path => !path.includes('node_modules')),
-          addReducerToState(options),
+          schematicUtils.addReducerToState(options),
         ])
       ),
       branchAndMerge(
@@ -62,7 +54,7 @@ export default function(options: ReducerOptions): Rule {
               path.endsWith('.module.ts') &&
               !path.endsWith('-routing.module.ts')
           ),
-          addReducerImportToNgModule(options),
+          schematicUtils.addReducerImportToNgModule(options),
           mergeWith(templateSource),
         ])
       ),

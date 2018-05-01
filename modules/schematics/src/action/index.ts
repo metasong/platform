@@ -14,23 +14,19 @@ import {
   Tree,
   SchematicContext,
 } from '@angular-devkit/schematics';
-import * as stringUtils from '@ngrx/store/schematics//strings';
+import * as utils from '@ngrx/store/schematics';
 import { Schema as ActionOptions } from './schema';
-import { getProjectPath } from '@ngrx/store/schematics/utility/project';
 
 export default function(options: ActionOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
-    options.path = getProjectPath(host, options);
+    options.path = utils.getProjectPath(host, options);
 
     const templateSource = apply(url('./files'), [
       options.spec ? noop() : filter(path => !path.endsWith('__spec.ts')),
       template({
         'if-flat': (s: string) =>
-          stringUtils.group(
-            options.flat ? '' : s,
-            options.group ? 'actions' : ''
-          ),
-        ...stringUtils,
+          utils.group(options.flat ? '' : s, options.group ? 'actions' : ''),
+        ...utils,
         ...(options as object),
         dot: () => '.',
       } as any),

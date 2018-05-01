@@ -3,16 +3,8 @@ import {
   UnitTestTree,
 } from '@angular-devkit/schematics/testing';
 import * as path from 'path';
-import {
-  createAppModule,
-  getFileContent,
-  createAppModuleWithEffects,
-} from '@ngrx/store/schematics/utility/test';
+import * as schematicUtils from '@ngrx/store/schematics';
 import { Schema as EffectOptions } from './schema';
-import {
-  getProjectPath,
-  createWorkspace,
-} from '@ngrx/store/schematics/utility/test/create-workspace';
 
 describe('Effect Schematic', () => {
   const schematicRunner = new SchematicTestRunner(
@@ -32,12 +24,12 @@ describe('Effect Schematic', () => {
     group: false,
   };
 
-  const projectPath = getProjectPath();
+  const projectPath = schematicUtils.getTestProjectPath();
 
   let appTree: UnitTestTree;
 
   beforeEach(() => {
-    appTree = createWorkspace(schematicRunner, appTree);
+    appTree = schematicUtils.createWorkspace(schematicRunner, appTree);
   });
 
   it('should create an effect', () => {
@@ -123,7 +115,7 @@ describe('Effect Schematic', () => {
       root: true,
       module: 'store.module.ts',
     };
-    appTree = createAppModuleWithEffects(
+    appTree = schematicUtils.createAppModuleWithEffects(
       appTree,
       storeModule,
       'EffectsModule.forRoot([])'
@@ -142,7 +134,7 @@ describe('Effect Schematic', () => {
       root: true,
       module: 'store.module.ts',
     };
-    appTree = createAppModuleWithEffects(
+    appTree = schematicUtils.createAppModuleWithEffects(
       appTree,
       storeModule,
       'EffectsModule.forRoot([UserEffects])'
@@ -159,7 +151,7 @@ describe('Effect Schematic', () => {
   it('should add an effect to the existing registered feature effects', () => {
     const storeModule = `${projectPath}/src/app/store.module.ts`;
     const options = { ...defaultOptions, module: 'store.module.ts' };
-    appTree = createAppModuleWithEffects(
+    appTree = schematicUtils.createAppModuleWithEffects(
       appTree,
       storeModule,
       `EffectsModule.forRoot([RootEffects])\n    EffectsModule.forFeature([UserEffects])`
@@ -176,7 +168,7 @@ describe('Effect Schematic', () => {
   it('should not add an effect to registered effects defined with a variable', () => {
     const storeModule = `${projectPath}/src/app/store.module.ts`;
     const options = { ...defaultOptions, module: 'store.module.ts' };
-    appTree = createAppModuleWithEffects(
+    appTree = schematicUtils.createAppModuleWithEffects(
       appTree,
       storeModule,
       'EffectsModule.forRoot(effects)'

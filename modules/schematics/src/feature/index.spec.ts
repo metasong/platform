@@ -4,10 +4,7 @@ import {
 } from '@angular-devkit/schematics/testing';
 import * as path from 'path';
 import { Schema as FeatureOptions } from './schema';
-import {
-  getProjectPath,
-  createWorkspace,
-} from '@ngrx/store/schematics/utility/test/create-workspace';
+import * as schematicUtils from '@ngrx/store/schematics';
 
 describe('Feature Schematic', () => {
   const schematicRunner = new SchematicTestRunner(
@@ -23,12 +20,12 @@ describe('Feature Schematic', () => {
     group: false,
   };
 
-  const projectPath = getProjectPath();
+  const projectPath = schematicUtils.getTestProjectPath();
 
   let appTree: UnitTestTree;
 
   beforeEach(() => {
-    appTree = createWorkspace(schematicRunner, appTree);
+    appTree = schematicUtils.createWorkspace(schematicRunner, appTree);
   });
 
   it('should create all files of a feature', () => {

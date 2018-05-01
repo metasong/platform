@@ -14,16 +14,8 @@ import {
   url,
 } from '@angular-devkit/schematics';
 import * as ts from 'typescript';
-import * as stringUtils from '@ngrx/store/schematics/strings';
-import { addImportToModule } from '@ngrx/store/schematics/utility/ast-utils';
-import { InsertChange, Change } from '@ngrx/store/schematics/utility/change';
-import {
-  buildRelativePath,
-  findModuleFromOptions,
-} from '@ngrx/store/schematics/utility/find-module';
+import * as schematicUtils from '@ngrx/store/schematics';
 import { Schema as StoreOptions } from './schema';
-import { insertImport } from '@ngrx/store/schematics/utility/route-utils';
-import { getProjectPath } from '@ngrx/store/schematics/utility/project';
 
 function addImportToNgModule(options: StoreOptions): Rule {
   return (host: Tree) => {
@@ -51,63 +43,80 @@ function addImportToNgModule(options: StoreOptions): Rule {
     );
 
     const statePath = `${options.path}/${options.statePath}`;
-    const relativePath = buildRelativePath(modulePath, statePath);
-    const environmentsPath = buildRelativePath(
+    const relativePath = schematicUtils.buildRelativePath(
+      modulePath,
+      statePath
+    );
+    const environmentsPath = schematicUtils.buildRelativePath(
       statePath,
       `/${options.path}/environments/environment`
     );
 
-    const storeNgModuleImport = addImportToModule(
-      source,
-      modulePath,
-      options.root
-        ? `StoreModule.forRoot(reducers, { metaReducers })`
-        : `StoreModule.forFeature('${stringUtils.camelize(
-            options.name
-          )}', from${stringUtils.classify(
-            options.name
-          )}.reducers, { metaReducers: from${stringUtils.classify(
-            options.name
-          )}.metaReducers })`,
-      relativePath
-    ).shift();
+    const storeNgModuleImport = schematicUtils
+      .addImportToModule(
+        source,
+        modulePath,
+        options.root
+          ? `StoreModule.forRoot(reducers, { metaReducers })`
+          : `StoreModule.forFeature('${schematicUtils.camelize(
+              options.name
+            )}', from${schematicUtils.classify(
+              options.name
+            )}.reducers, { metaReducers: from${schematicUtils.classify(
+              options.name
+            )}.metaReducers })`,
+        relativePath
+      )
+      .shift();
 
     let commonImports = [
-      insertImport(source, modulePath, 'StoreModule', '@ngrx/store'),
+      schematicUtils.insertImport(
+        source,
+        modulePath,
+        'StoreModule',
+        '@ngrx/store'
+      ),
       options.root
-        ? insertImport(
+        ? schematicUtils.insertImport(
             source,
             modulePath,
             'reducers, metaReducers',
             relativePath
           )
-        : insertImport(
+        : schematicUtils.insertImport(
             source,
             modulePath,
-            `* as from${stringUtils.classify(options.name)}`,
+            `* as from${schematicUtils.classify(options.name)}`,
             relativePath,
             true
           ),
       storeNgModuleImport,
     ];
-    let rootImports: (Change | undefined)[] = [];
+    let rootImports: (schematicUtils.Change | undefined)[] = [];
 
     if (options.root) {
-      const storeDevtoolsNgModuleImport = addImportToModule(
-        source,
-        modulePath,
-        `!environment.production ? StoreDevtoolsModule.instrument() : []`,
-        relativePath
-      ).shift();
+      const storeDevtoolsNgModuleImport = schematicUtils
+        .addImportToModule(
+          source,
+          modulePath,
+          `!environment.production ? StoreDevtoolsModule.instrument() : []`,
+          relativePath
+        )
+        .shift();
 
       rootImports = rootImports.concat([
-        insertImport(
+        schematicUtils.insertImport(
           source,
           modulePath,
           'StoreDevtoolsModule',
           '@ngrx/store-devtools'
         ),
-        insertImport(source, modulePath, 'environment', environmentsPath),
+        schematicUtils.insertImport(
+          source,
+          modulePath,
+          'environment',
+          environmentsPath
+        ),
         storeDevtoolsNgModuleImport,
       ]);
     }
@@ -115,7 +124,7 @@ function addImportToNgModule(options: StoreOptions): Rule {
     const changes = [...commonImports, ...rootImports];
     const recorder = host.beginUpdate(modulePath);
     for (const change of changes) {
-      if (change instanceof InsertChange) {
+      if (change instanceof schematicUtils.InsertChange) {
         recorder.insertLeft(change.pos, change.toAdd);
       }
     }
@@ -127,16 +136,16 @@ function addImportToNgModule(options: StoreOptions): Rule {
 
 export default function(options: StoreOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
-    options.path = getProjectPath(host, options);
+    options.path = schematicUtils.getProjectPath(host, options);
 
     const statePath = `/${options.path}/${options.statePath}/index.ts`;
-    const environmentsPath = buildRelativePath(
+    const environmentsPath = schematicUtils.buildRelativePath(
       statePath,
       `/${options.path}/environments/environment`
     );
 
     if (options.module) {
-      options.module = findModuleFromOptions(host, options);
+      options.module = schematicUtils.findModuleFromOptions(host, options);
     }
 
     if (
@@ -144,12 +153,12 @@ export default function(options: StoreOptions): Rule {
       options.stateInterface &&
       options.stateInterface !== 'State'
     ) {
-      options.stateInterface = stringUtils.classify(options.stateInterface);
+      options.stateInterface = schematicUtils.classify(options.stateInterface);
     }
 
     const templateSource = apply(url('./files'), [
       template({
-        ...stringUtils,
+        ...schematicUtils,
         ...(options as object),
         environmentsPath,
       } as any),

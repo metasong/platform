@@ -14,17 +14,8 @@ import {
   mergeWith,
 } from '@angular-devkit/schematics';
 import * as ts from 'typescript';
-import * as stringUtils from '@ngrx/store/schematics/strings';
+import * as schematicUtils from '@ngrx/store/schematics';
 import { Schema as ContainerOptions } from './schema';
-import { buildRelativePath } from '@ngrx/store/schematics/utility/find-module';
-import {
-  NoopChange,
-  InsertChange,
-  ReplaceChange,
-} from '@ngrx/store/schematics/utility/change';
-import { insertImport } from '@ngrx/store/schematics/utility/route-utils';
-import { omit } from '@ngrx/store/schematics/utility/ngrx-utils';
-import { getProjectPath } from '@ngrx/store/schematics/utility/project';
 
 function addStateToComponent(options: ContainerOptions) {
   return (host: Tree) => {
@@ -42,8 +33,8 @@ function addStateToComponent(options: ContainerOptions) {
 
     const componentPath =
       `/${options.path}/` +
-      (options.flat ? '' : stringUtils.dasherize(options.name) + '/') +
-      stringUtils.dasherize(options.name) +
+      (options.flat ? '' : schematicUtils.dasherize(options.name) + '/') +
+      schematicUtils.dasherize(options.name) +
       '.component.ts';
 
     const text = host.read(componentPath);
@@ -61,22 +52,25 @@ function addStateToComponent(options: ContainerOptions) {
       true
     );
 
-    const stateImportPath = buildRelativePath(componentPath, statePath);
-    const storeImport = insertImport(
+    const stateImportPath = schematicUtils.buildRelativePath(
+      componentPath,
+      statePath
+    );
+    const storeImport = schematicUtils.insertImport(
       source,
       componentPath,
       'Store',
       '@ngrx/store'
     );
     const stateImport = options.state
-      ? insertImport(
+      ? schematicUtils.insertImport(
           source,
           componentPath,
           `* as fromStore`,
           stateImportPath,
           true
         )
-      : new NoopChange();
+      : new schematicUtils.NoopChange();
 
     const componentClass = source.statements.find(
       stm => stm.kind === ts.SyntaxKind.ClassDeclaration
@@ -94,7 +88,7 @@ function addStateToComponent(options: ContainerOptions) {
     const [start, end] = constructorText.split('()');
     const storeText = `private store: Store<${stateType}>`;
     const storeConstructor = [start, `(${storeText})`, end].join('');
-    const constructorUpdate = new ReplaceChange(
+    const constructorUpdate = new schematicUtils.ReplaceChange(
       componentPath,
       pos,
       `  ${constructorText}\n\n`,
@@ -105,9 +99,9 @@ function addStateToComponent(options: ContainerOptions) {
     const recorder = host.beginUpdate(componentPath);
 
     for (const change of changes) {
-      if (change instanceof InsertChange) {
+      if (change instanceof schematicUtils.InsertChange) {
         recorder.insertLeft(change.pos, change.toAdd);
-      } else if (change instanceof ReplaceChange) {
+      } else if (change instanceof schematicUtils.ReplaceChange) {
         recorder.remove(pos, change.oldText.length);
         recorder.insertLeft(change.order, change.newText);
       }
@@ -121,11 +115,11 @@ function addStateToComponent(options: ContainerOptions) {
 
 export default function(options: ContainerOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
-    options.path = getProjectPath(host, options);
+    options.path = schematicUtils.getProjectPath(host, options);
 
     const opts = ['state', 'stateInterface'].reduce(
       (current: Partial<ContainerOptions>, key) => {
-        return omit(current, key as any);
+        return schematicUtils.omit(current, key as any);
       },
       options
     );
@@ -134,7 +128,7 @@ export default function(options: ContainerOptions): Rule {
       options.spec ? noop() : filter(path => !path.endsWith('__spec.ts')),
       template({
         'if-flat': (s: string) => (options.flat ? '' : s),
-        ...stringUtils,
+        ...schematicUtils,
         ...(options as object),
         dot: () => '.',
       } as any),

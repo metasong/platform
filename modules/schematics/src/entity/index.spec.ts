@@ -4,10 +4,7 @@ import {
 } from '@angular-devkit/schematics/testing';
 import * as path from 'path';
 import { Schema as EntityOptions } from './schema';
-import {
-  getProjectPath,
-  createWorkspace,
-} from '@ngrx/store/schematics/utility/test/create-workspace';
+import * as schematicUtils from '@ngrx/store/schematics';
 
 describe('Entity Schematic', () => {
   const schematicRunner = new SchematicTestRunner(
@@ -21,12 +18,12 @@ describe('Entity Schematic', () => {
     spec: false,
   };
 
-  const projectPath = getProjectPath();
+  const projectPath = schematicUtils.getTestProjectPath();
 
   let appTree: UnitTestTree;
 
   beforeEach(() => {
-    appTree = createWorkspace(schematicRunner, appTree);
+    appTree = schematicUtils.createWorkspace(schematicRunner, appTree);
   });
 
   it('should create 3 files', () => {
