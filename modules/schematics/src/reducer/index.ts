@@ -15,16 +15,16 @@ import {
   url,
 } from '@angular-devkit/schematics';
 import * as ts from 'typescript';
-import * as stringUtils from '../strings';
-import { findModuleFromOptions } from '../utility/find-module';
+import * as stringUtils from '@ngrx/store/schematics/strings';
+import { findModuleFromOptions } from '@ngrx/store/schematics/utility/find-module';
 import { Schema as ReducerOptions } from './schema';
 import {
   addReducerToStateInferface,
   addReducerToActionReducerMap,
   addReducerToState,
   addReducerImportToNgModule,
-} from '../utility/ngrx-utils';
-import { getProjectPath } from '../utility/project';
+} from '@ngrx/store/schematics/utility/ngrx-utils';
+import { getProjectPath } from '@ngrx/store/schematics/utility/project';
 
 export default function(options: ReducerOptions): Rule {
   return (host: Tree, context: SchematicContext) => {

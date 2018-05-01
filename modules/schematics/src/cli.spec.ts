@@ -7,7 +7,7 @@ import * as path from 'path';
 import {
   createWorkspace,
   getProjectPath,
-} from './utility/test/create-workspace';
+} from '@ngrx/store/schematics/utility/test/create-workspace';
 
 describe('CLI Schematic', () => {
   const schematicRunner = new SchematicTestRunner(

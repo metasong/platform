@@ -14,16 +14,16 @@ import {
   url,
 } from '@angular-devkit/schematics';
 import * as ts from 'typescript';
-import * as stringUtils from '../strings';
-import { addImportToModule } from '../utility/ast-utils';
-import { InsertChange, Change } from '../utility/change';
+import * as stringUtils from '@ngrx/store/schematics/strings';
+import { addImportToModule } from '@ngrx/store/schematics/utility/ast-utils';
+import { InsertChange, Change } from '@ngrx/store/schematics/utility/change';
 import {
   buildRelativePath,
   findModuleFromOptions,
-} from '../utility/find-module';
+} from '@ngrx/store/schematics/utility/find-module';
 import { Schema as StoreOptions } from './schema';
-import { insertImport } from '../utility/route-utils';
-import { getProjectPath } from '../utility/project';
+import { insertImport } from '@ngrx/store/schematics/utility/route-utils';
+import { getProjectPath } from '@ngrx/store/schematics/utility/project';
 
 function addImportToNgModule(options: StoreOptions): Rule {
   return (host: Tree) => {

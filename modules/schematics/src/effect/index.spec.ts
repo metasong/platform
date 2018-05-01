@@ -7,12 +7,12 @@ import {
   createAppModule,
   getFileContent,
   createAppModuleWithEffects,
-} from '../utility/test';
+} from '@ngrx/store/schematics/utility/test';
 import { Schema as EffectOptions } from './schema';
 import {
   getProjectPath,
   createWorkspace,
-} from '../utility/test/create-workspace';
+} from '@ngrx/store/schematics/utility/test/create-workspace';
 
 describe('Effect Schematic', () => {
   const schematicRunner = new SchematicTestRunner(

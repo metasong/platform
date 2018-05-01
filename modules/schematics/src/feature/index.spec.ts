@@ -7,7 +7,7 @@ import { Schema as FeatureOptions } from './schema';
 import {
   getProjectPath,
   createWorkspace,
-} from '../utility/test/create-workspace';
+} from '@ngrx/store/schematics/utility/test/create-workspace';
 
 describe('Feature Schematic', () => {
   const schematicRunner = new SchematicTestRunner(

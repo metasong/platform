@@ -17,6 +17,7 @@
     "paths": {
       "@ngrx/effects": ["./modules/effects"],
       "@ngrx/store": ["./modules/store"],
+      "@ngrx/store/schematics/*": ["./modules/store/schematics/*"],
       "@ngrx/store-devtools": ["./modules/store-devtools"],
       "@ngrx/router-store": ["./modules/router-store"],
       "@ngrx/entity": ["./modules/entity"],
