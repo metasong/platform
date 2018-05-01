@@ -4,7 +4,7 @@ import {
 } from '@angular-devkit/schematics/testing';
 import * as path from 'path';
 import { Schema as EntityOptions } from './schema';
-import * as schematicUtils from '@ngrx/store/schematics';
+import * as schematicUtils from '@ngrx/schematics-core';
 
 describe('Entity Schematic', () => {
   const schematicRunner = new SchematicTestRunner(

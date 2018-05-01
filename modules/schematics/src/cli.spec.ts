@@ -4,7 +4,7 @@ import {
   UnitTestTree,
 } from '@angular-devkit/schematics/testing';
 import * as path from 'path';
-import * as schematicUtils from '@ngrx/store/schematics';
+import * as schematicUtils from '@ngrx/schematics-core';
 
 describe('CLI Schematic', () => {
   const schematicRunner = new SchematicTestRunner(

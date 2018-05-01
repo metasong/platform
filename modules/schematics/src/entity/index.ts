@@ -14,7 +14,7 @@ import {
   Tree,
   SchematicContext,
 } from '@angular-devkit/schematics';
-import * as schematicUtils from '@ngrx/store/schematics';
+import * as schematicUtils from '@ngrx/schematics-core';
 import { Schema as EntityOptions } from './schema';
 
 export default function(options: EntityOptions): Rule {

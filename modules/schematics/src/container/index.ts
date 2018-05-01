@@ -14,7 +14,7 @@ import {
   mergeWith,
 } from '@angular-devkit/schematics';
 import * as ts from 'typescript';
-import * as schematicUtils from '@ngrx/store/schematics';
+import * as schematicUtils from '@ngrx/schematics-core';
 import { Schema as ContainerOptions } from './schema';
 
 function addStateToComponent(options: ContainerOptions) {

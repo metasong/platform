@@ -15,7 +15,7 @@ import {
   url,
 } from '@angular-devkit/schematics';
 import * as ts from 'typescript';
-import * as schematicUtils from '@ngrx/store/schematics';
+import * as schematicUtils from '@ngrx/schematics-core';
 import { Schema as ReducerOptions } from './schema';
 
 export default function(options: ReducerOptions): Rule {

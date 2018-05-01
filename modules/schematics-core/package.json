@@ -1,5 +1,5 @@
 {
-  "name": "@ngrx/store/schematics",
+  "name": "@ngrx/schematics-core",
   "version": "0.0.0-PLACEHOLDER",
   "description": "NgRx Schematics Utilities",
   "repository": {
